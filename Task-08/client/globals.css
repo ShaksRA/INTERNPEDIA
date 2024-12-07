@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.link-hover {
+  cursor: pointer;
+  width: max-content;
+}
+
+.link-hover:hover {
+  color: #ff9900;
+}
