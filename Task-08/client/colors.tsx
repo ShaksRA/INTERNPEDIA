@@ -1,18 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 
 const Colors = ({ colors }: { colors: string[] }) => {
-  const [selected, setSelected] = useState(0);
-
   return (
-    <ul className="flex gap-5">
-      {colors.map((color, index) => (
+    <ul className="flex gap-1">
+      {colors.map((color) => (
         <li
           key={color}
-          className={`h-10 w-10 rounded-full cursor-pointer border-4  ${
-            selected === index ? " border-amazon-primary " : "border-white"
-          }`}
+          className="h-5 w-5 rounded-full"
           style={{ backgroundColor: color }}
-          onClick={() => setSelected(index)}
         ></li>
       ))}
     </ul>

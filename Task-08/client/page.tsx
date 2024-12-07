@@ -1,46 +1,32 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Filters } from "./components/filters";
-import { Product } from "./components/product";
-import { BiRepeat } from "react-icons/bi";
-import { useSearchParams } from "next/navigation";
-import { getSearchResults } from "@/lib/api/search";
-import { ProductType } from "@/utils/types";
+import { recordStripePayment } from "@/lib/api/orders";
+import { useAppStore } from "@/store/store";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
 
 const Page = () => {
+  const { emptyCart } = useAppStore();
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const searchTerm = searchParams.get("query");
-  const category = searchParams.get("category");
-  const [products, setProducts] = useState<ProductType[]>([]);
-  useEffect(() => {
-    const getProducts = async () => {
-      const response: ProductType[] = await getSearchResults(
-        searchTerm as string,
-        category ?? ""
-      );
+  const paymentIntent = searchParams.get("payment_intent");
 
-      setProducts(response ?? []);
+  useEffect(() => {
+    const updateOrderInfo = async () => {
+      const response = await recordStripePayment(paymentIntent as string);
     };
-    if (searchTerm || category) {
-      getProducts();
+    if (paymentIntent) {
+      updateOrderInfo();
+      emptyCart();
+      setTimeout(() => router.push("/my-orders"), 3000);
     }
-  }, [searchTerm, category]);
+  }, [emptyCart, router, paymentIntent]);
 
   return (
-    <div className="grid mt-5" style={{ gridTemplateColumns: "15% 85%" }}>
-      <Filters />
-      <div>
-        <div>
-          <h3 className="mb-3">
-            <strong className="font-semibold">Results</strong>
-          </h3>
-        </div>
-        <div className="grid grid-cols-1 gap-10 pb-10">
-          {products.map((product) => (
-            <Product key={product.id} productDetails={product} />
-          ))}
-        </div>
-      </div>
+    <div className="h-[80vh] flex items-center px-20 pt-20 flex-col">
+      <h1 className="text-4xl text-center">
+        Payment successful. You are being redirected to the orders page.
+      </h1>
+      <h1 className="text-4xl text-center">Please do not close the page.</h1>
     </div>
   );
 };
